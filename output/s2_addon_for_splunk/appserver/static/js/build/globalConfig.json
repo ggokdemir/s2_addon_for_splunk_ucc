@@ -1,0 +1,283 @@
+{
+    "pages": {
+        "configuration": {
+            "tabs": [
+                {
+                    "name": "account",
+                    "table": {
+                        "actions": [
+                            "edit",
+                            "delete",
+                            "clone"
+                        ],
+                        "header": [
+                            {
+                                "label": "Name",
+                                "field": "name"
+                            }
+                        ]
+                    },
+                    "entity": [
+                        {
+                            "type": "text",
+                            "label": "Name",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "errorMsg": "Account Name must begin with a letter and consist exclusively of alphanumeric characters and underscores.",
+                                    "pattern": "^[a-zA-Z]\\w*$"
+                                },
+                                {
+                                    "type": "string",
+                                    "errorMsg": "Length of input name should be between 1 and 100",
+                                    "minLength": 1,
+                                    "maxLength": 100
+                                }
+                            ],
+                            "field": "name",
+                            "help": "A unique name for the account.",
+                            "required": true
+                        }
+                    ],
+                    "title": "Accounts"
+                },
+                {
+                    "name": "logging",
+                    "entity": [
+                        {
+                            "type": "singleSelect",
+                            "label": "Log level",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "value": "DEBUG",
+                                        "label": "DEBUG"
+                                    },
+                                    {
+                                        "value": "INFO",
+                                        "label": "INFO"
+                                    },
+                                    {
+                                        "value": "WARN",
+                                        "label": "WARN"
+                                    },
+                                    {
+                                        "value": "ERROR",
+                                        "label": "ERROR"
+                                    },
+                                    {
+                                        "value": "CRITICAL",
+                                        "label": "CRITICAL"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "INFO",
+                            "field": "loglevel"
+                        }
+                    ],
+                    "title": "Logging"
+                }
+            ],
+            "title": "Configuration",
+            "description": "Set up your add-on"
+        },
+        "inputs": {
+            "services": [
+                {
+                    "template": "input_with_helper",
+                    "name": "s2_input",
+                    "entity": [
+                        {
+                            "type": "text",
+                            "label": "Name",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "errorMsg": "Input Name must begin with a letter and consist exclusively of alphanumeric characters and underscores.",
+                                    "pattern": "^[a-zA-Z]\\w*$"
+                                },
+                                {
+                                    "type": "string",
+                                    "errorMsg": "Length of input name should be between 1 and 100",
+                                    "minLength": 1,
+                                    "maxLength": 100
+                                }
+                            ],
+                            "field": "name",
+                            "help": "A unique name for the data input.",
+                            "required": true
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "help": "An index to save File Notifications as JSON, if not as XML.",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "singleSelect",
+                            "label": "Account to use",
+                            "options": {
+                                "referenceName": "account"
+                            },
+                            "help": "Account to use for this input.",
+                            "field": "account",
+                            "required": true
+                        },
+                        {
+                            "type": "text",
+                            "label": "Add-on Server URL",
+                            "field": "Server_URL",
+                            "help": "URL address for the Add-on.",
+                            "defaultValue": "localhost",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 9,
+                                    "maxLength": 15,
+                                    "errorMsg": "URL only."
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "ex: http://<netbox>/appdevent/nbapi/event"
+                            }
+                        },
+                        {
+                            "type": "text",
+                            "label": "Username",
+                            "field": "Username",
+                            "help": "URL address Auth: Username",
+                            "defaultValue": "username",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 4,
+                                    "maxLength": 25,
+                                    "errorMsg": "Username only."
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "ex: admin"
+                            }
+                        },
+                        {
+                            "type": "text",
+                            "label": "Password",
+                            "field": "Password",
+                            "help": "URL address Auth: Password.",
+                            "defaultValue": "password",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 4,
+                                    "maxLength": 25,
+                                    "errorMsg": "Password only."
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "ex: Admin123"
+                            }
+                        }
+                    ],
+                    "title": "s2_input"
+                }
+            ],
+            "title": "Inputs",
+            "description": "Manage your data inputs",
+            "table": {
+                "actions": [
+                    "edit",
+                    "enable",
+                    "delete",
+                    "clone"
+                ],
+                "header": [
+                    {
+                        "label": "Name",
+                        "field": "name"
+                    },
+                    {
+                        "label": "Index",
+                        "field": "index"
+                    },
+                    {
+                        "label": "Status",
+                        "field": "disabled"
+                    }
+                ],
+                "moreInfo": [
+                    {
+                        "label": "Name",
+                        "field": "name"
+                    },
+                    {
+                        "label": "Index",
+                        "field": "index"
+                    },
+                    {
+                        "label": "Account to use",
+                        "field": "account"
+                    },
+                    {
+                        "label": "Status",
+                        "field": "disabled",
+                        "mapping": {
+                            "true": "Disabled",
+                            "false": "Enabled"
+                        }
+                    },
+                    {
+                        "label": "Add-on Server URL",
+                        "field": "Server_URL"
+                    },
+                    {
+                        "label": "Username",
+                        "field": "username"
+                    },
+                    {
+                        "label": "Password",
+                        "field": "password"
+                    }
+                ]
+            }
+        },
+        "dashboard": {
+            "panels": [
+                {
+                    "name": "addon_version"
+                },
+                {
+                    "name": "events_ingested_by_sourcetype"
+                },
+                {
+                    "name": "errors_in_the_addon"
+                }
+            ]
+        }
+    },
+    "meta": {
+        "name": "s2_addon_for_splunk",
+        "restRoot": "s2_addon_for_splunk",
+        "version": "0.0.4",
+        "displayName": "S2 Add-on for Splunk",
+        "schemaVersion": "0.0.3"
+    }
+}
