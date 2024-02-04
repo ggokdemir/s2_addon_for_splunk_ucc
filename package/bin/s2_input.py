@@ -86,6 +86,7 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
 
     def collect_events(helper, ew):
 
+        headers = ""
         SessionId = ""
         Username = helper.get_arg("Username")
         Password = helper.get_arg("Password")
@@ -107,9 +108,10 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
         headers = headers.replace("{{"+'SessionId'+"}}",opt_SessionId)
         
         if(SessionId != ""):
-
+            helper.log_info("\n\n [INFO] SessionId for the Add-on : ["+SessionId+"@"+url+"] \n\n")
             try:
-                if (SessionId != ""):
+                if(SessionId != ""):
+                    helper.log_info("\n\n [INFO] SessionId for the Add-on : ["+SessionId+"@"+url+"] \n\n")
                     result_SessionId = SessionId.group(1)
                     helper.log_info("\n\n [INFO] SessionId : {}".format(result_SessionId) +" [Username : "+Username+"] \n\n")
                     
@@ -184,6 +186,7 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
             
             if response.status_code == 200:
                 try:
+                    
                     data = json.dumps(response.json())
                     #TODO: find the SessionId in the XML.
 
@@ -194,7 +197,8 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
                         pattern = f'{re.escape(tag_start)}(.*?)\s*{re.escape(tag_end)}'
                         SessionId = re.search(pattern, data)
 
-                        if (SessionId):
+                        if(SessionId):
+                            helper.log_info("\n\n [INFO] SessionId for the Add-on : ["+SessionId+"@"+url+"] \n\n")
                             result_SessionId = SessionId.group(1)
                             helper.log_info("\n\n [INFO] SessionId : {}".format(result_SessionId) +" [Username : "+Username+"] \n\n")
                             
