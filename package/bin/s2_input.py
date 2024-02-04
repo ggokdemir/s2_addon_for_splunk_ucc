@@ -92,98 +92,84 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
 
         # insert input values into the url and/or header (helper class handles credential store)
         opt_account = helper.get_arg('account')
-        url = url.replace("{{"+'account'+"}}",opt_account)
-        headers = headers.replace("{{"+'account'+"}}",opt_account)
         
         opt_Server_URL = helper.get_arg('Server_URL')
-        url = url.replace("{{"+'Server_URL'+"}}",opt_Server_URL)
-        headers = headers.replace("{{"+'Server_URL'+"}}",opt_Server_URL)
         
         opt_Username = helper.get_arg('Username')
-        url = url.replace("{{"+'Username'+"}}",opt_Username)
-        headers = headers.replace("{{"+'Username'+"}}",opt_Username)
-        
+
         opt_Password = helper.get_arg('Password')
-        url = url.replace("{{"+'Password'+"}}",opt_Password)
-        headers = headers.replace("{{"+'Password'+"}}",opt_Password)
         
         if(SessionId != ""):
 
             try:
-                data = json.dumps(response.json())
-                #TODO: find the SessionId in the XML.
+                # here edit find the <SessionId>
+                tag_start = "<SessionId>"
+                tag_end = "</SessionId>"
+                pattern = f'{re.escape(tag_start)}(.*?)\s*{re.escape(tag_end)}'
+                SessionId = re.search(pattern, data)
 
-                try:
-                    # here edit find the <SessionId>
-                    tag_start = "<SessionId>"
-                    tag_end = "</SessionId>"
-                    pattern = f'{re.escape(tag_start)}(.*?)\s*{re.escape(tag_end)}'
-                    SessionId = re.search(pattern, data)
+                if (SessionId):
+                    result_SessionId = SessionId.group(1)
+                    helper.log_info("\n\n [INFO] SessionId : {}".format(result_SessionId) +" [Username : "+Username+"] \n\n")
+                    
+                    # Now execute the api call with the SessionId
 
-                    if (SessionId):
-                        result_SessionId = SessionId.group(1)
-                        helper.log_info("\n\n [INFO] SessionId : {}".format(result_SessionId) +" [Username : "+Username+"] \n\n")
+                    opt_SessionId = helper.get_arg('SessionId')
+                    url = url.replace("{{"+'SessionId'+"}}",opt_SessionId)
+                    headers = headers.replace("{{"+'SessionId'+"}}",opt_SessionId)
+
+                    headers=json.loads(headers)
+                    response = helper.send_http_request(url, "GET", headers=headers,  parameters="", payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
+
+                    try:
+                        response.raise_for_status()
                         
-                        # Now execute the api call with the SessionId
-
-                        opt_SessionId = helper.get_arg('SessionId')
-                        url = url.replace("{{"+'SessionId'+"}}",opt_SessionId)
-                        headers = headers.replace("{{"+'SessionId'+"}}",opt_SessionId)
-
-                        headers=json.loads(headers)
-                        response = helper.send_http_request(url, "GET", headers=headers,  parameters="", payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
-
+                    except:
+                        helper.log_error ("\n\n [ERROR] "+response.text+"[Username : "+Username+"] \n\n")
+                    
+                    if response.status_code == 200:
+                    
                         try:
-                            response.raise_for_status()
+                            root = ET.fromstring(data)
+                            def xml_to_dict(item):
+                                if len(item) == 0:
+                                    return item.text
+                                result = {}
+                                for i in item:
+                                    i_data = xml_to_dict(i)
+                                    if i.tag in result:
+                                        if type(result[i.tag]) is list:
+                                            result[i.tag].append(i_data)
+                                        else:
+                                            result[i.tag] = [result[i.tag], i_data]
+                                    else:
+                                        result[i.tag] = i_data
+                                return result
+                            xml_dict = {root.tag: xml_to_dict(root)}
+                            # Convert the Python dictionary to JSON
+                            json_data = json.dumps(xml_dict, indent=4)
+
+                            try:
+                                sourcetype=  Username  + "://" + helper.get_input_stanza_names()
+                                event = helper.new_event(source=Username, index=index, sourcetype=sourcetype , data=json_data)
+                                ew.write_event(event)
+                                helper.log_info("\n\n [INFO] Event Inserted in JSON format. \n source="+Username+", index="+index+", sourcetype="+sourcetype+" , data="+json_data+" [Username : "+Username+"] \n\n")
+                            except:
+                                helper.log_error("\n\n [ERROR] Error inserting JSON event. [Username : "+Username+"] \n\n")
                             
                         except:
-                            helper.log_error ("\n\n [ERROR] "+response.text+"[Username : "+Username+"] \n\n")
-                        
-                        if response.status_code == 200:
-                        
                             try:
-                                root = ET.fromstring(data)
-                                def xml_to_dict(item):
-                                    if len(item) == 0:
-                                        return item.text
-                                    result = {}
-                                    for i in item:
-                                        i_data = xml_to_dict(i)
-                                        if i.tag in result:
-                                            if type(result[i.tag]) is list:
-                                                result[i.tag].append(i_data)
-                                            else:
-                                                result[i.tag] = [result[i.tag], i_data]
-                                        else:
-                                            result[i.tag] = i_data
-                                    return result
-                                xml_dict = {root.tag: xml_to_dict(root)}
-                                # Convert the Python dictionary to JSON
-                                json_data = json.dumps(xml_dict, indent=4)
-
-                                try:
-                                    sourcetype=  Username  + "://" + helper.get_input_stanza_names()
-                                    event = helper.new_event(source=Username, index=index, sourcetype=sourcetype , data=json_data)
-                                    ew.write_event(event)
-                                    helper.log_info("\n\n [INFO] Event Inserted in JSON format. \n source="+Username+", index="+index+", sourcetype="+sourcetype+" , data="+json_data+" [Username : "+Username+"] \n\n")
-                                except:
-                                    helper.log_error("\n\n [ERROR] Error inserting JSON event. [Username : "+Username+"] \n\n")
-                                
+                                sourcetype=  Username  + "://" + helper.get_input_stanza_names()
+                                event = helper.new_event(source=Username, index=index, sourcetype=sourcetype , data=data)
+                                ew.write_event(event)
+                                helper.log_info("\n\n [INFO] Event Inserted in XML format. \n source="+Username+", index="+index+", sourcetype="+sourcetype+" , data="+data+" [Username : "+Username+"] \n\n")
                             except:
-                                try:
-                                    sourcetype=  Username  + "://" + helper.get_input_stanza_names()
-                                    event = helper.new_event(source=Username, index=index, sourcetype=sourcetype , data=data)
-                                    ew.write_event(event)
-                                    helper.log_info("\n\n [INFO] Event Inserted in XML format. \n source="+Username+", index="+index+", sourcetype="+sourcetype+" , data="+data+" [Username : "+Username+"] \n\n")
-                                except:
-                                    helper.log_error("\n\n [ERROR] Error inserting XML event. [Username : "+Username+"] \n\n")
+                                helper.log_error("\n\n [ERROR] Error inserting XML event. [Username : "+Username+"] \n\n")
 
-                        else:
-                            helper.log_info("\n\n [INFO] response.status_code = "+response.status_code+" [Username : "+Username+"] \n\n")
-                except:
-                    helper.log_error("\n\n [ERROR] Error using SessionId. [Username : "+Username+"] \n\n")
+                    else:
+                        helper.log_info("\n\n [INFO] response.status_code = "+response.status_code+" [Username : "+Username+"] \n\n")
             except:
-                helper.log_error("\n\n [ERROR] Error finding SessionId [Username : "+Username+"] \n\n")
+                helper.log_error("\n\n [ERROR] Error using SessionId. [Username : "+Username+"] \n\n")
 
         else:
             # Now execute the api call if no SessionId is provided.

@@ -36,7 +36,7 @@ fields = [
         'Server_URL',
         required=True,
         encrypted=False,
-        default='localhost',
+        default='http://<netbox>/appdevent/nbapi/event',
         validator=validator.String(
             max_len=15, 
             min_len=9, 
