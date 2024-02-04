@@ -299,7 +299,7 @@
     "meta": {
         "name": "s2_addon_for_splunk",
         "restRoot": "s2_addon_for_splunk",
-        "version": "0.1.1",
+        "version": "0.1.3",
         "displayName": "S2 Add-on for Splunk",
         "schemaVersion": "0.0.3"
     }
