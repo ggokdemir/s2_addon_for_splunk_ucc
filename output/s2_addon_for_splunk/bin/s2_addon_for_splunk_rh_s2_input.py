@@ -36,10 +36,10 @@ fields = [
         'Server_URL',
         required=True,
         encrypted=False,
-        default='http://<netbox>/appdevent/nbapi/event',
+        default='netbox',
         validator=validator.String(
-            max_len=15, 
-            min_len=9, 
+            max_len=32, 
+            min_len=4, 
         )
     ), 
     field.RestField(

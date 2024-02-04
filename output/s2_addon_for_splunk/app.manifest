@@ -21,7 +21,7 @@
         "id": {
             "group": null,
             "name": "s2_addon_for_splunk",
-            "version": "0.0.3"
+            "version": "0.0.9"
         },
         "license": {
             "name": null,

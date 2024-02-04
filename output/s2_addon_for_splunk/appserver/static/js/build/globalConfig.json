@@ -144,18 +144,18 @@
                             "label": "Add-on Server URL",
                             "field": "Server_URL",
                             "help": "URL address for the Add-on.",
-                            "defaultValue": "http://<netbox>/appdevent/nbapi/event",
+                            "defaultValue": "netbox",
                             "required": true,
                             "validators": [
                                 {
                                     "type": "string",
-                                    "minLength": 9,
-                                    "maxLength": 15,
-                                    "errorMsg": "URL only."
+                                    "minLength": 4,
+                                    "maxLength": 32,
+                                    "errorMsg": "Domain of the URL or IP address."
                                 }
                             ],
                             "options": {
-                                "placeholder": "ex: http://<netbox>/appdevent/nbapi/event"
+                                "placeholder": "ex: http://<DOMAIN>/appdevent/nbapi/event"
                             }
                         },
                         {
@@ -299,7 +299,7 @@
     "meta": {
         "name": "s2_addon_for_splunk",
         "restRoot": "s2_addon_for_splunk",
-        "version": "0.0.3",
+        "version": "0.0.9",
         "displayName": "S2 Add-on for Splunk",
         "schemaVersion": "0.0.3"
     }

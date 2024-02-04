@@ -14,10 +14,6 @@ from solnlib import log
 from solnlib.modular_input import checkpointer
 from splunktaucclib.modinput_wrapper import base_modinput  as base_mi 
 
-import xml.etree.ElementTree as ET
-import json
-import re
-
 bin_dir  = os.path.basename(__file__)
 app_name = os.path.basename(os.path.dirname(os.getcwd()))
 
@@ -71,6 +67,13 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
             )
         )
         
+        scheme.add_argument(
+            smi.Argument(
+                'SessionId',
+                required_on_create=False,
+            )
+        )
+        
         return scheme
 
     def validate_input(self, definition):
@@ -98,17 +101,15 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
         opt_Username = helper.get_arg('Username')
 
         opt_Password = helper.get_arg('Password')
+
+        opt_SessionId = helper.get_arg('SessionId')
+        url = url.replace("{{"+'SessionId'+"}}",opt_SessionId)
+        headers = headers.replace("{{"+'SessionId'+"}}",opt_SessionId)
         
         if(SessionId != ""):
 
             try:
-                # here edit find the <SessionId>
-                tag_start = "<SessionId>"
-                tag_end = "</SessionId>"
-                pattern = f'{re.escape(tag_start)}(.*?)\s*{re.escape(tag_end)}'
-                SessionId = re.search(pattern, data)
-
-                if (SessionId):
+                if (SessionId != ""):
                     result_SessionId = SessionId.group(1)
                     helper.log_info("\n\n [INFO] SessionId : {}".format(result_SessionId) +" [Username : "+Username+"] \n\n")
                     
@@ -280,7 +281,7 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
                 else:
                     self.global_checkbox_fields = []
             except Exception as e:
-                self.log_error("\n\n Get exception when loading global checkbox parameter names. " + str(e)+" \n\n")
+                self.log_error('Get exception when loading global checkbox parameter names. ' + str(e))
                 self.global_checkbox_fields = []
         return self.global_checkbox_fields
 
