@@ -4,3 +4,4 @@ account =
 Server_URL = 
 Username = 
 Password = 
+SessionId = 

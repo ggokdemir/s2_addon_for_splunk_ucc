@@ -83,9 +83,10 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
 
     def collect_events(helper, ew):
 
-        sessionId = ""
+        SessionId = ""
         Username = helper.get_arg("Username")
         Password = helper.get_arg("Password")
+        SessionId = helper.get_arg("SessionId")
         url = helper.get_arg("Server_URL")
         helper.log_info("\n\n [INFO] Settings for the Add-on : ["+Username+":"+Password+"@"+url+"] \n\n")
 
@@ -106,6 +107,8 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
         url = url.replace("{{"+'Password'+"}}",opt_Password)
         headers = headers.replace("{{"+'Password'+"}}",opt_Password)
         
+        
+
         # Now execute the api call
         headers=json.loads(headers)
         response = helper.send_http_request(url, "GET", headers=headers,  parameters="", payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
@@ -120,24 +123,24 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
         if response.status_code == 200:
             try:
                 data = json.dumps(response.json())
-                #TODO: find the sessionId in the XML.
+                #TODO: find the SessionId in the XML.
 
                 try:
                     # here edit find the <SessionId>
                     tag_start = "<SessionId>"
                     tag_end = "</SessionId>"
                     pattern = f'{re.escape(tag_start)}(.*?)\s*{re.escape(tag_end)}'
-                    sessionId = re.search(pattern, data)
+                    SessionId = re.search(pattern, data)
 
-                    if (sessionId):
-                        result_SessionId = sessionId.group(1)
+                    if (SessionId):
+                        result_SessionId = SessionId.group(1)
                         helper.log_info("\n\n [INFO] SessionId : {}".format(result_SessionId) +" [Username : "+Username+"] \n\n")
                         
-                        # Now execute the api call with the sessionId
+                        # Now execute the api call with the SessionId
 
-                        opt_sessionId = helper.get_arg('sessionId')
-                        url = url.replace("{{"+'sessionId'+"}}",opt_sessionId)
-                        headers = headers.replace("{{"+'sessionId'+"}}",opt_sessionId)
+                        opt_SessionId = helper.get_arg('SessionId')
+                        url = url.replace("{{"+'SessionId'+"}}",opt_SessionId)
+                        headers = headers.replace("{{"+'SessionId'+"}}",opt_SessionId)
 
                         headers=json.loads(headers)
                         response = helper.send_http_request(url, "GET", headers=headers,  parameters="", payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
@@ -190,9 +193,9 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
                         else:
                             helper.log_info("\n\n [INFO] response.status_code = "+response.status_code+" [Username : "+Username+"] \n\n")
                 except:
-                    helper.log_error("\n\n [ERROR] Error using sessionId. [Username : "+Username+"] \n\n")
+                    helper.log_error("\n\n [ERROR] Error using SessionId. [Username : "+Username+"] \n\n")
             except:
-                helper.log_error("\n\n [ERROR] Error finding sessionId [Username : "+Username+"] \n\n")
+                helper.log_error("\n\n [ERROR] Error finding SessionId [Username : "+Username+"] \n\n")
         else:
             helper.log_info("\n\n [INFO] response.status_code = "+response.status_code+" [Username : "+Username+"] \n\n")
 

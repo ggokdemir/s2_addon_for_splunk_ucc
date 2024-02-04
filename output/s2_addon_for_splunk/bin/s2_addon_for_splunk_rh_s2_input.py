@@ -62,6 +62,16 @@ fields = [
             min_len=4, 
         )
     ), 
+    field.RestField(
+        'SessionId',
+        required=False,
+        encrypted=False,
+        default='',
+        validator=validator.String(
+            max_len=256, 
+            min_len=8, 
+        )
+    ), 
 
     field.RestField(
         'disabled',
