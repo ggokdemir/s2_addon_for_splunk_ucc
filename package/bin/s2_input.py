@@ -128,8 +128,7 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
                 except:
                     helper.log_error ("\n\n [ERROR] "+response.text+"[Username : "+Username+"] \n\n")
                 
-                if response.status_code == 200:
-                
+                if (response.status_code == 200):
                     try:
                         root = ET.fromstring(data)
                         def xml_to_dict(item):
@@ -173,11 +172,11 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
                 helper.log_error("\n\n [ERROR] Error using SessionId. [Username : "+Username+"] \n\n")
 
         else:
-            # Now execute the api call if no SessionId is provided.
-            headers=json.loads(headers)
-            response = helper.send_http_request(url, "GET", headers=headers,  parameters="", payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
-
             try:
+                # Now execute the api call if no SessionId is provided.
+                headers=json.loads(headers)
+                response = helper.send_http_request(url, "GET", headers=headers,  parameters="", payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
+
                 response.raise_for_status()   
             except:
                 helper.log_error ("\n\n [ERROR] "+response.text+"[Username : "+Username+"] \n\n")
