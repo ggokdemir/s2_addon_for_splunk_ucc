@@ -144,7 +144,7 @@
                             "label": "Add-on Server URL",
                             "field": "Server_URL",
                             "help": "URL address for the Add-on.",
-                            "defaultValue": "localhost",
+                            "defaultValue": "http://<netbox>/appdevent/nbapi/event",
                             "required": true,
                             "validators": [
                                 {
