@@ -14,13 +14,6 @@ from solnlib import log
 from solnlib.modular_input import checkpointer
 from splunktaucclib.modinput_wrapper import base_modinput  as base_mi 
 
-#TODO: Remove after troubleshoot.
-import sys, os
-sys.path.append(os.path.join(os.environ['SPLUNK_HOME'],'etc','apps','SA-VSCode','bin'))
-import splunk_debug as dbg
-dbg.enable_debugging(timeout=25)
-#TODO: Remove debug libraries.
-
 import xml.etree.ElementTree as ET
 
 bin_dir  = os.path.basename(__file__)
@@ -132,10 +125,11 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
 
                     try:
                         #data = json.dumps(response.json())
-                        data=response
-                        index=helper.get_arg("index")
+                        data=response.content.decode('utf-8')
+
                         sourcetype=  opt_Username  + "://" + opt_Server_URL
                         event = helper.new_event(source=opt_Username, index=index, sourcetype=sourcetype , data=data)
+                        helper.log_info("\n\n [INFO] Event to insert in XML format. \n source="+opt_Username+", index="+index+", sourcetype="+opt_Server_URL+" , data="+str(data)+" [Username : "+opt_Username+"] \n\n")
                         ew.write_event(event)
                         helper.log_info("\n\n [INFO] Event Inserted in XML format. \n source="+opt_Username+", index="+index+", sourcetype="+opt_Server_URL+" , data="+str(data)+" [Username : "+opt_Username+"] \n\n")
                     except Exception as e:
@@ -182,7 +176,7 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
                 if response.status_code == 200:
                     try:
                         #data = json.dumps(response.json())
-                        data = response.content
+                        data = response.content.decode('utf-8')
 
                         helper.log_info("\n\n [INFO] Response to search for the SessionId. data="+str(data)+" [Username : "+opt_Username+"] \n\n")
 
@@ -223,7 +217,7 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
 
                                         try:
                                             #data = json.dumps(response.json())
-                                            data = response.content
+                                            data = response.content.decode('utf-8')
                                             
                                             sourcetype=  opt_Username  + "://" + opt_Server_URL
                                             event = helper.new_event(source=opt_Username, index=index, sourcetype=sourcetype , data=data)
