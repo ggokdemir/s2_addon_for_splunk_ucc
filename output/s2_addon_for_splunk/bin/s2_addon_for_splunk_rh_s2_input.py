@@ -54,7 +54,7 @@ fields = [
     ), 
     field.RestField(
         'Password',
-        required=True,
+        required=False,
         encrypted=False,
         default='password',
         validator=validator.String(

@@ -183,7 +183,7 @@
                             "field": "Password",
                             "help": "URL address Auth: Password.",
                             "defaultValue": "password",
-                            "required": true,
+                            "required": false,
                             "validators": [
                                 {
                                     "type": "string",
@@ -212,7 +212,7 @@
                                 }
                             ],
                             "options": {
-                                "placeholder": "Please provide the SessionId if you already have one. Or leave it empty."
+                                "placeholder": "Please provide the SessionId if you already have one. Or please leave it empty."
                             }
                         }
                     ],
@@ -299,7 +299,7 @@
     "meta": {
         "name": "s2_addon_for_splunk",
         "restRoot": "s2_addon_for_splunk",
-        "version": "0.1.3",
+        "version": "0.2.0",
         "displayName": "S2 Add-on for Splunk",
         "schemaVersion": "0.0.3"
     }
