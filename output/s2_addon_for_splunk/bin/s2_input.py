@@ -14,6 +14,8 @@ from solnlib import log
 from solnlib.modular_input import checkpointer
 from splunktaucclib.modinput_wrapper import base_modinput  as base_mi 
 
+import requests
+
 import xml.etree.ElementTree as ET
 
 bin_dir  = os.path.basename(__file__)
@@ -136,9 +138,11 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
             try:
                 # Now execute the api call with the SessionId
 
-                response = helper.send_http_request(url, "POST", headers=headers, payload=payload, cookies=cookies, use_proxy=True)
+                #response = helper.send_http_request(url, "POST", headers=headers, payload=payload, cookies=cookies, use_proxy=True)
+                response = requests.post(url, headers=headers, data=payload, cookies=cookies)
 
                 try:
+                    helper.log_info ("\n\n [INFO] ("+response.status_code+") "+response.text+" [Username : "+opt_Username+"] \n\n")
                     response.raise_for_status()
                     
                 except Exception as e:
@@ -192,9 +196,11 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
             try:
                 # Now execute the api call if no SessionId is provided.
 
-                response = helper.send_http_request(sessionid_url, "POST", headers=headers, payload=payload, cookies=cookies, verify=True, use_proxy=True)
+                #response = helper.send_http_request(sessionid_url, "POST", headers=headers, payload=payload, cookies=cookies, verify=True, use_proxy=True)
+                response = requests.post(sessionid_url, headers=headers, data=payload)
 
                 try:
+                    helper.log_info ("\n\n [INFO] ("+response.status_code+") "+response.text+" [Username : "+opt_Username+"] \n\n")
                     response.raise_for_status()
                     
                 except Exception as e:
