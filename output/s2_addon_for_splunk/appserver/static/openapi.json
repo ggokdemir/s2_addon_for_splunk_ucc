@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "s2_addon_for_splunk",
-        "version": "0.2.0",
+        "version": "0.3.0",
         "description": "S2 Add-on for Splunk",
         "contact": {
             "name": ""

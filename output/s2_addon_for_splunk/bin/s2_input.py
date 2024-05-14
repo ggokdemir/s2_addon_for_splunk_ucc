@@ -104,16 +104,39 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
         if(opt_SessionId != ""):
             helper.log_info("\n\n [INFO] SessionId for the Add-on : ["+opt_SessionId+"] \n\n")
 
+            #FIXME:
             url = url.replace("{{"+'Server_URL'+"}}",opt_Server_URL)
+            url = "http://192.168.204.50/appdevent/nbapi/event"
 
-            cookies = {".sessionId": opt_SessionId}
+            cookies = {
+                '.sessionId': opt_SessionId
+            }
 
-            headers = {"Content-Type": "application/xml"}
+            headers = {
+                'Content-Type': 'text/xml',
+            }
+
+            payload = """
+            <NETBOX-API>
+                <COMMAND name='StreamEvents'>
+                    <PARAMS>
+                        <TAGNAMES>
+                            <PERSONID />
+                            <PERSONNAME />
+                            <ACNAME />
+                            <ACTIVITYID />
+                            <CDT />
+                            <DESCNAME />
+                        </TAGNAMES>
+                    </PARAMS>
+                </COMMAND>
+            </NETBOX-API>
+            """
 
             try:
                 # Now execute the api call with the SessionId
 
-                response = helper.send_http_request(url, "GET", headers=headers,  parameters="", payload=None, cookies=cookies, verify=True, cert=None, timeout=None, use_proxy=True)
+                response = helper.send_http_request(url, "POST", headers=headers, payload=payload, cookies=cookies, use_proxy=True)
 
                 try:
                     response.raise_for_status()
@@ -143,29 +166,33 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
         else:
             helper.log_info("\n\n [INFO] No SessionId found in the Input : ["+opt_SessionId+"] \n\n")
 
+            #FIXME:
             sessionid_url = sessionid_url.replace("{{"+'Server_URL'+"}}",opt_Server_URL)
+            sessionid_url = 'http://172.23.204.50/goforms/nbapi'
 
             headers = {
-                        "Content-Type": "application/xml"
-                    }
+                #"User-Agent": "curl/8.1.2",
+                "Accept": "*/*",
+                "Content-Type": "application/xml"
+            }
+            cookies = None
 
-            payload = """
-                            <NETBOX-API>
-                                <COMMAND name="Login" num="1" dateformat="tzoffset">
-                                    <PARAMS>
-                                        <USERNAME>{{Username}}</USERNAME>
-                                        <PASSWORD>*{{Password}}*</PASSWORD>
-                                    </PARAMS>
-                                </COMMAND>
-                            </NETBOX-API>
-                        """
-            payload = payload.replace("{{"+'Username'+"}}",opt_Username)
-            payload = payload.replace("{{"+'Password'+"}}",opt_Password)
+            # Define the XML data (payload)
+            payload = '''
+            <NETBOX-API>
+                <COMMAND name="Login" num="1" dateformat="tzoffset">
+                    <PARAMS>
+                        <USERNAME>{{Username}}</USERNAME>
+                        <PASSWORD>{{Password}}</PASSWORD>
+                    </PARAMS>
+                </COMMAND>
+            </NETBOX-API>
+            '''
 
             try:
                 # Now execute the api call if no SessionId is provided.
 
-                response = helper.send_http_request(sessionid_url, "GET", headers=headers,  parameters="", payload=payload, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
+                response = helper.send_http_request(sessionid_url, "POST", headers=headers, payload=payload, cookies=cookies, verify=True, use_proxy=True)
 
                 try:
                     response.raise_for_status()
