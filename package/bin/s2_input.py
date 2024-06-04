@@ -14,7 +14,6 @@ from solnlib import log
 from solnlib.modular_input import checkpointer
 from splunktaucclib.modinput_wrapper import base_modinput  as base_mi 
 
-import requests
 
 import xml.etree.ElementTree as ET
 
@@ -106,16 +105,11 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
         if(opt_SessionId != ""):
             helper.log_info("\n\n [INFO] SessionId for the Add-on : ["+opt_SessionId+"] \n\n")
 
-            #FIXME:
             url = url.replace("{{"+'Server_URL'+"}}",opt_Server_URL)
-            url = "http://192.168.204.50/appdevent/nbapi/event"
+            helper.log_info("\n\n [INFO] URL for the Add-on : ["+url+"] \n\n")
 
             cookies = {
                 '.sessionId': opt_SessionId
-            }
-
-            headers = {
-                'Content-Type': 'text/xml',
             }
 
             payload = """
@@ -137,20 +131,24 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
 
             try:
                 # Now execute the api call with the SessionId
-
+                helper.log_info("\n\n Before the response : [] \n\n")
+                response = helper.send_http_request(url, "GET", payload=payload, cookies=cookies)
                 #response = helper.send_http_request(url, "POST", headers=headers, payload=payload, cookies=cookies, use_proxy=True)
-                response = requests.post(url, headers=headers, data=payload, cookies=cookies)
+                #response = helper.send_http_request(url, "POST", headers=headers, payload=payload)
+                #response = requests.post(url, headers=headers, data=payload, cookies=cookies)
+                helper.log_info("\n\n After the response : [] \n\n")
 
                 try:
-                    helper.log_info ("\n\n [INFO] ("+response.status_code+") "+response.text+" [Username : "+opt_Username+"] \n\n")
+                    helper.log_info ("\n\n [INFO] ("+str(response.status_code)+") "+response.text+" [Username : "+opt_Username+"] \n\n")
                     response.raise_for_status()
                     
                 except Exception as e:
                     helper.log_error ("\n\n [ERROR] "+response.text+" "+str(e)+" [Username : "+opt_Username+"] \n\n")
                 
                 if (response.status_code == 200):
-
+                    helper.log_info("\n\n Status code: ["+str(response.status_code)+"] \n\n")
                     try:
+                        helper.log_info("\n\n Will decode : ["+str(response.status_code)+"] \n\n")
                         #data = json.dumps(response.json())
                         data=response.content.decode('utf-8')
 
@@ -160,7 +158,7 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
                         ew.write_event(event)
                         helper.log_info("\n\n [INFO] Event Inserted in XML format. \n source="+opt_Username+", index="+index+", sourcetype="+opt_Server_URL+" , data="+str(data)+" [Username : "+opt_Username+"] \n\n")
                     except Exception as e:
-                        helper.log_error("\n\n [ERROR] Error inserting XML event. : "+str(e)+" [Username : "+opt_Username+"] \n\n")
+                        helper.log_error("\n\n [ERROR] Error decoding/inserting XML event. : "+str(e)+" [Username : "+opt_Username+"] \n\n")
 
                 else:
                     helper.log_info("\n\n [INFO] response.status_code = "+str(response.status_code)+" [Username : "+opt_Username+"] \n\n")               
@@ -170,9 +168,7 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
         else:
             helper.log_info("\n\n [INFO] No SessionId found in the Input : ["+opt_SessionId+"] \n\n")
 
-            #FIXME:
             sessionid_url = sessionid_url.replace("{{"+'Server_URL'+"}}",opt_Server_URL)
-            sessionid_url = 'http://172.23.204.50/goforms/nbapi'
 
             headers = {
                 #"User-Agent": "curl/8.1.2",
@@ -197,10 +193,10 @@ class ModInputS2_INPUT(base_mi.BaseModInput):
                 # Now execute the api call if no SessionId is provided.
 
                 #response = helper.send_http_request(sessionid_url, "POST", headers=headers, payload=payload, cookies=cookies, verify=True, use_proxy=True)
-                response = requests.post(sessionid_url, headers=headers, data=payload)
+                response = helper.send_http_request(sessionid_url, "POST", headers=headers, payload=payload, cookies=cookies)
 
                 try:
-                    helper.log_info ("\n\n [INFO] ("+response.status_code+") "+response.text+" [Username : "+opt_Username+"] \n\n")
+                    helper.log_info ("\n\n [INFO] ("+str(response.status_code)+") "+response.text+" [Username : "+opt_Username+"] \n\n")
                     response.raise_for_status()
                     
                 except Exception as e:
